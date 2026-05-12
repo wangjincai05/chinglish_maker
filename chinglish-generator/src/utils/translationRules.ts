@@ -337,14 +337,30 @@ function simpleWordByWordTranslate(text: string): string {
     '越...越...': 'the more...the more...',
   };
 
-  let result = text;
   const sortedKeys = Object.keys(wordMap).sort((a, b) => b.length - a.length);
+  const translatedParts: string[] = [];
+  let remainingText = text;
 
-  for (const key of sortedKeys) {
-    const regex = new RegExp(key, 'g');
-    result = result.replace(regex, wordMap[key]);
+  while (remainingText.length > 0) {
+    let matched = false;
+    for (const key of sortedKeys) {
+      if (remainingText.startsWith(key)) {
+        const translation = wordMap[key];
+        if (translation) {
+          translatedParts.push(translation);
+        }
+        remainingText = remainingText.slice(key.length);
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      translatedParts.push(remainingText[0]);
+      remainingText = remainingText.slice(1);
+    }
   }
 
+  let result = translatedParts.join(' ');
   result = result.replace(/\s+/g, ' ').trim();
   result = result.charAt(0).toUpperCase() + result.slice(1);
 
