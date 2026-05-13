@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "📦 Pulled changes, building project..."
+
+# Run deploy script
+./deploy.sh
+
+echo "✅ Post-pull build complete!"
+exit 0
