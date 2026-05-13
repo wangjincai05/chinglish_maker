@@ -7,6 +7,7 @@ export interface TranslationResult {
 }
 
 async function callDeepSeek(prompt: string): Promise<string> {
+  console.log('Calling DeepSeek API...');
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
@@ -27,11 +28,15 @@ async function callDeepSeek(prompt: string): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
+    const errorText = await response.text();
+    console.error('API request failed:', response.status, errorText);
+    throw new Error(`API request failed: ${response.status} - ${errorText}`);
   }
 
   const data = await response.json();
-  return data.choices[0]?.message?.content || '';
+  const result = data.choices[0]?.message?.content || '';
+  console.log('DeepSeek API result:', result);
+  return result;
 }
 
 export async function translateWithAI(chineseText: string): Promise<TranslationResult> {
@@ -46,6 +51,7 @@ export async function translateWithAI(chineseText: string): Promise<TranslationR
 标准英语：` ;
 
   try {
+    console.log('Starting AI translation for:', chineseText);
     const [chinglish, standard] = await Promise.all([
       callDeepSeek(chinglishPrompt),
       callDeepSeek(standardPrompt)

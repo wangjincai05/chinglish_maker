@@ -1193,7 +1193,7 @@ function simpleWordByWordTranslate(text: string): string {
       }
     }
     if (!matched) {
-      translatedParts.push(remainingText[0]);
+      // 如果没有找到匹配的词，跳过这个字符而不是保留中文字符
       remainingText = remainingText.slice(1);
     }
   }
@@ -1227,13 +1227,16 @@ function getStandardTranslation(text: string): string {
 export async function translateToChinglish(text: string): Promise<TranslationResult> {
   let chinglishResult = text;
   let standardResult = text;
+  let ruleMatched = false;
 
+  // 先尝试匹配本地规则
   for (const rule of translationRules) {
     if (typeof rule.pattern === 'string') {
       if (text === rule.pattern) {
         chinglishResult = typeof rule.chinglish === 'function' ? rule.chinglish(text) : rule.chinglish;
         standardResult = typeof rule.standard === 'function' ? rule.standard(text) : rule.standard;
-        return { chinglish: chinglishResult, standard: standardResult };
+        ruleMatched = true;
+        break;
       }
     } else {
       const match = text.match(rule.pattern);
@@ -1248,16 +1251,27 @@ export async function translateToChinglish(text: string): Promise<TranslationRes
         } else {
           standardResult = rule.standard;
         }
-        return { chinglish: chinglishResult, standard: standardResult };
+        ruleMatched = true;
+        break;
       }
     }
   }
 
-  try {
-    return await translateWithAI(text);
-  } catch {
+  // 如果没有匹配到本地规则，或者匹配到本地规则但需要更准确的翻译，尝试API
+  if (!ruleMatched) {
+    try {
+      console.log('No local rule found, using AI translation for:', text);
+      return await translateWithAI(text);
+    } catch (error) {
+      console.error('AI translation failed, falling back to simple translation:', error);
+    }
+  }
+
+  // 如果有本地规则或者API失败，使用简单翻译
+  if (!ruleMatched) {
     chinglishResult = simpleWordByWordTranslate(text);
     standardResult = getStandardTranslation(text);
-    return { chinglish: chinglishResult, standard: standardResult };
   }
+
+  return { chinglish: chinglishResult, standard: standardResult };
 }
