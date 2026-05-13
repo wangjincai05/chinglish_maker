@@ -1,0 +1,62 @@
+const API_KEY = 'sk-bd319cbc6f6b42c2bf644e89b9ced95b';
+const API_URL = 'https://api.deepseek.com/v1/chat/completions';
+
+export interface TranslationResult {
+  chinglish: string;
+  standard: string;
+}
+
+async function callDeepSeek(prompt: string): Promise<string> {
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${API_KEY}`
+    },
+    body: JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 500
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0]?.message?.content || '';
+}
+
+export async function translateWithAI(chineseText: string): Promise<TranslationResult> {
+  const chinglishPrompt = `将以下中文翻译成"中式英语"（Chinglish），即中国人常犯的英语错误，如：字对字翻译、语法结构错误、中式表达习惯等。请只输出翻译结果，不要解释。
+
+中文：${chineseText}
+中式英语：` ;
+
+  const standardPrompt = `将以下中文翻译成自然地道的标准英语。请只输出翻译结果，不要解释。
+
+中文：${chineseText}
+标准英语：` ;
+
+  try {
+    const [chinglish, standard] = await Promise.all([
+      callDeepSeek(chinglishPrompt),
+      callDeepSeek(standardPrompt)
+    ]);
+
+    return {
+      chinglish: chinglish.trim(),
+      standard: standard.trim()
+    };
+  } catch (error) {
+    console.error('DeepSeek API error:', error);
+    throw error;
+  }
+}

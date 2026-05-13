@@ -66,24 +66,27 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
     set({ isLoading: true, chinglish: '', standard: '', showCompare: false })
 
-    await new Promise(resolve => setTimeout(resolve, 800))
+    try {
+      const result = await translateToChinglish(inputText.trim())
+      set({ 
+        chinglish: result.chinglish, 
+        standard: result.standard, 
+        showCompare: true, 
+        isLoading: false 
+      })
 
-    const result = translateToChinglish(inputText.trim())
-    set({ 
-      chinglish: result.chinglish, 
-      standard: result.standard, 
-      showCompare: true, 
-      isLoading: false 
-    })
+      addToHistory({
+        chinese: inputText.trim(),
+        chinglish: result.chinglish,
+        standard: result.standard
+      })
+      set({ history: getHistory() })
 
-    addToHistory({
-      chinese: inputText.trim(),
-      chinglish: result.chinglish,
-      standard: result.standard
-    })
-    set({ history: getHistory() })
-
-    addToast('生成成功！', 'success')
+      addToast('生成成功！', 'success')
+    } catch {
+      set({ isLoading: false })
+      addToast('翻译失败，请重试', 'error')
+    }
   },
   
   handleClear: () => {
