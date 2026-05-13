@@ -36,7 +36,7 @@ export const ExamplesPage: React.FC = () => {
                   <div>
                     <p className="font-medium text-gray-900">{example.chinese}</p>
                     {expandedId === example.id && (
-                      <p className="text-xs text-gray-500 mt-1">{example.description}</p>
+                      <p className="text-xs text-gray-500 mt-1">{example.explanation}</p>
                     )}
                   </div>
                   {expandedId === example.id ? (
