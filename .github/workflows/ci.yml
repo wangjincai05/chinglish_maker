@@ -2,14 +2,14 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, develop ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, develop ]
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build and Deploy
+    name: Build and Deploy to GitHub Pages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -34,8 +34,9 @@ jobs:
         working-directory: chinglish-generator
         run: npm run build
 
-      - name: Deploy to dist directory
-        uses: actions/upload-artifact@v4
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          name: build-artifact
-          path: dist/
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
