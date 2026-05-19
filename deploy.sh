@@ -17,7 +17,7 @@ echo "🔨 Building project..."
 npm run build
 
 echo "✅ Build complete!"
-echo "📁 Output directory: $(pwd)/../dist"
+echo "📁 Output directory: $(pwd)/dist"
 
 echo -e "\n🎉 Deployment successful!\n"
 echo "You can preview the build with:"
