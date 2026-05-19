@@ -1,3 +1,3 @@
-$outputPath = "H:\data\wantasy\vercel-login-output.txt"
-Set-Location "H:\data\wantasy\chinglish-generator"
+$outputPath = Join-Path $PSScriptRoot "vercel-login-output.txt"
+Set-Location (Join-Path $PSScriptRoot "chinglish-generator")
 npx vercel login *>"$outputPath"
