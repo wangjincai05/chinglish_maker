@@ -1,0 +1,7 @@
+> 
+  Visit https://vercel.com/oauth/device?user_code=FZMC-BVFB
+
+Waiting for authentication...
+Error: The user aborted a request.
+
+H:\data\wantasy\chinglish-generator>
