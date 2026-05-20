@@ -38,7 +38,7 @@ export const TranslatePage: React.FC = () => {
               <button
                 onClick={handleGenerate}
                 disabled={isLoading || !inputText.trim()}
-                className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium flex items-center justify-center gap-2"
+                className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium flex items-center justify-center gap-2 whitespace-nowrap"
               >
                 {isLoading ? (
                   <>
